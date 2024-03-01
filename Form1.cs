@@ -32,28 +32,35 @@ namespace ClipboardToWord
             {
                 if (Clipboard.ContainsText())
                 {
-                    // Initialize Word application
-                    Word.Application wordApp = new Word.Application();
-                    wordApp.Visible = false;
+                    if (!Clipboard.ContainsData(DataFormats.Rtf))
+                    {
+                        // Initialize Word application
+                        Word.Application wordApp = new Word.Application();
+                        wordApp.Visible = false;
 
-                    // Create a new document
-                    Word.Document newDoc = wordApp.Documents.Add();
+                        // Create a new document
+                        Word.Document newDoc = wordApp.Documents.Add();
 
-                    // Paste the content into the new document
-                    newDoc.Content.Paste();
+                        // Paste the content into the new document
+                        newDoc.Content.Paste();
 
-                    // Now, copy the content of the new document to the clipboard
-                    newDoc.Content.Copy();
+                        // Now, copy the content of the new document to the clipboard
+                        newDoc.Content.Copy();
 
-                    // Close the documents
-                    newDoc.Close(false);
-                    wordApp.Quit();
+                        // Close the documents
+                        newDoc.Close(false);
+                        wordApp.Quit();
 
-                    // Cleanup
-                    _ = System.Runtime.InteropServices.Marshal.ReleaseComObject(newDoc);
-                    _ = System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
+                        // Cleanup
+                        _ = System.Runtime.InteropServices.Marshal.ReleaseComObject(newDoc);
+                        _ = System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
 
-                    MessageBox.Show("Content copied to clipboard.");
+                        MessageBox.Show("Content copied to clipboard.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("The clipboard already contains RTF content; there is no need to paste it into Word.");
+                    }
                 }
                 else
                 {
