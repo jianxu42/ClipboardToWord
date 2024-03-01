@@ -1,32 +1,56 @@
-using System;
-using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace ClipboardToWord
 {
     public partial class Form1 : Form
     {
+        Button transferButton; // Declare it at the class level to access it in both methods
+
         public Form1()
         {
-            // Configure your form and add controls here
             this.Text = "Seamless Clipboard to Word Transfer Tool";
             this.Size = new System.Drawing.Size(800, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            var triggerButton = new Button
+            var validateRTFButton = new Button
+            {
+                Text = "Validate RTF in Clipboard",
+                Size = new System.Drawing.Size(400, 50),
+                Location = new System.Drawing.Point(
+                    (this.ClientSize.Width - 400) / 2,
+                    (this.ClientSize.Height - 50) / 2 - 60 // Position appropriately
+                )
+            };
+            validateRTFButton.Click += ValidateRTFButton_Click;
+            Controls.Add(validateRTFButton);
+
+            transferButton = new Button
             {
                 Text = "Clipboard to Word",
-                Size = new System.Drawing.Size(400, 50)
+                Size = new System.Drawing.Size(400, 50),
+                Location = new System.Drawing.Point(
+                    (this.ClientSize.Width - 400) / 2,
+                    (this.ClientSize.Height - 50) / 2 + 10 // Position appropriately
+                ),
+                Visible = false // Initially hidden
             };
-            triggerButton.Location = new System.Drawing.Point(
-                (this.ClientSize.Width - triggerButton.Width) / 2,
-                (this.ClientSize.Height - triggerButton.Height) / 2
-            );
-            triggerButton.Click += button1_Click;
-            Controls.Add(triggerButton);
+            transferButton.Click += TransferButton_Click;
+            Controls.Add(transferButton);
         }
 
-        private void button1_Click(object? sender, EventArgs e)
+        private void ValidateRTFButton_Click(object? sender, EventArgs e)
+        {
+            if (!Clipboard.ContainsData(DataFormats.Rtf))
+            {
+                transferButton.Visible = true; // Show the transfer button only if clipboard does not contain RTF
+            }
+            else
+            {
+                MessageBox.Show("The clipboard already contains RTF content.");
+            }
+        }
+
+        private void TransferButton_Click(object? sender, EventArgs e)
         {
             try
             {
@@ -66,7 +90,7 @@ namespace ClipboardToWord
                 {
                     MessageBox.Show("The current content on the clipboard is not text.");
                 }
-                
+
             }
             catch (Exception ex)
             {
